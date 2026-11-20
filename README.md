@@ -4,6 +4,8 @@ Many learners finish A1 German and book their Goethe or ÖSD exam without knowin
 
 **Globio Ready** is a short readiness check that tells learners where they stand *before* they book.
 
+**Live app:** https://globio-ready.vercel.app
+
 ## What it does
 
 The learner answers **15 questions**: 5 vocabulary, 5 grammar and 5 reading, based on a short email and an opening-hours sign. The questions are in the style of the A1 exam. After each answer, the learner says whether they were **sure** or **guessing**.
