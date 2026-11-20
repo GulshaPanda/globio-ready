@@ -1,82 +1,68 @@
 # Globio Ready: "Am I exam-ready?"
 
-A short A1 German readiness check. Learners answer 15 questions (vocabulary, grammar, reading). For each one they also say whether they were **sure** or **guessing**. They then get:
+Many learners finish A1 German and book their Goethe or ÖSD exam without knowing whether they are ready. Some fail and lose both the exam fee and time on their journey abroad.
 
-- a verdict: **Ready to book**, **Almost ready** or **Not ready yet**
-- a score for each skill
-- the **2–3 topics to practise** before booking the Goethe or ÖSD exam
+**Globio Ready** is a short readiness check that tells learners where they stand *before* they book.
 
-Built with React + Vite + Tailwind CSS. No login and no database.
+## What it does
 
----
+The learner answers **15 questions**: 5 vocabulary, 5 grammar and 5 reading, based on a short email and an opening-hours sign. The questions are in the style of the A1 exam. After each answer, the learner says whether they were **sure** or **guessing**.
+
+The report shows:
+
+- **A verdict:** Ready to book, Almost ready, or Not ready yet, with the reasons in plain words
+- **Readiness by skill**
+- **The top 3 topics to practise**, each with a practical tip
+- **Confidence insights:** correct answers that were guesses, and wrong answers the learner was sure about
+- **An answer review** with an explanation for every question
 
 ## How "ready" is calculated
 
-All the numbers live in `src/config.js`.
-
-1. **Skill score** = % of that skill's 5 questions answered correctly.
-2. **Overall score** = average of the three skills, each weighted equally.
-3. **Ready to book** needs all three of these:
-   - **70% or more overall.** The real A1 exams need about 60%. A short 15-question check is less reliable than the real exam, so we ask for a safety margin.
-   - **No skill below 60%.** A strong score in one skill shouldn't hide a weak one.
-   - **No more than 3 correct answers marked "I guessed".** Lucky guesses don't count as knowledge.
-4. **Almost ready** = 55% or more overall, but at least one rule above isn't met.
-5. **Not ready yet** = below 55%.
-
-**What to practise:** every wrong answer gives its topic 2 points, and every correct-but-guessed answer gives it 1 point. The 3 topics with the most points are shown, each with a practical tip.
-
-Confidence **never changes the score**. The score is simply right or wrong, which keeps it fair. Confidence only affects the **verdict** and the **advice**.
-
-These thresholds are a first estimate. The next step is to check them against learners' real exam results.
-
----
-
-## Code map: which file does what
-
-| File | What it does | Go here when you want to… |
+| Rule | Value | Why |
 |---|---|---|
-| `src/config.js` | **Settings.** Every number behind "ready" | change the pass mark, the guess limit, or the number of topics shown |
-| `src/data/questions.js` | **All questions**, reading texts, and practice tips per topic | add, edit or remove a question, a reading text or a tip |
-| `src/lib/scoring.js` | **The brain.** Turns answers into scores, a verdict and priorities | change *how* scoring works (new rules) |
-| `src/App.jsx` | **The frame.** Header, plus which screen to show | change the header or the order of screens |
-| `src/components/WelcomeScreen.jsx` | First page | change the welcome text or button |
-| `src/components/QuizScreen.jsx` | One question at a time, plus "How sure are you?" | change how a question looks or behaves |
-| `src/components/ResultsScreen.jsx` | The readiness report | change the verdict wording, colours or sections |
-| `src/index.css` | Global font and background | change the look of the whole app |
+| Overall score needed | **70%** | The real A1 exams need about 60%. A 15-question check is less reliable than the real exam, so the app asks for a safety margin. |
+| Minimum per skill | **60%** | A strong skill shouldn't hide a weak one. |
+| Maximum correct guesses | **3** | Lucky guesses don't count as knowledge. |
+| "Almost ready" from | **55%** | Close enough that 1–2 weeks of focused practice could get there. |
 
----
+- **Skill score** = % of that skill's questions answered correctly. **Overall** = average of the three skills.
+- **Confidence never changes the score.** The score stays simply right or wrong. Confidence only affects the verdict and the practice advice.
+- **Practice priorities:** each wrong answer gives its topic 2 points, each correct-but-guessed answer gives it 1 point, and the highest-scoring topics are shown.
 
-## Likely live-round changes, and where to make them
+These thresholds are a first estimate. The next step is to validate them against learners' real exam results.
 
-| They ask… | You do… |
-|---|---|
-| "Change the pass mark to 65%" | `src/config.js` → `readyOverall: 65` |
-| "Show only 2 practice topics" | `src/config.js` → `topicsToShow: 2` |
-| "Ignore guesses in the verdict" | `src/config.js` → `maxLuckyGuesses: 15` |
-| "Add a grammar question" | `src/data/questions.js` → copy a grammar block, paste it, change `id`, `prompt`, `options`, `answer`, `explanation` |
-| "Change the 'Almost ready' message" | `src/components/ResultsScreen.jsx` → `VERDICTS` → `almost` → `message` |
-| "Change the button colour" | Replace `indigo` with another colour (e.g. `emerald`) in the component files |
-| "Make grammar count more" | `src/lib/scoring.js` → step 3, the overall score calculation |
+## Project structure
 
----
-
-## Run it on your laptop
-
-You need Node.js installed (from nodejs.org).
-
-```bash
-npm install      # one time only: downloads the building blocks
-npm run dev      # starts the app at http://localhost:5173
+```
+src/
+├── config.js              All scoring rules and thresholds
+├── data/questions.js      Questions, reading texts and practice tips per topic
+├── lib/scoring.js         Turns answers into scores, a verdict and priorities
+├── App.jsx                App frame: header and screen switching
+└── components/
+    ├── WelcomeScreen.jsx  Intro page
+    ├── QuizScreen.jsx     One question at a time, with the confidence step
+    └── ResultsScreen.jsx  The readiness report
 ```
 
-Save any file and the browser updates automatically.
+Content, rules and logic are deliberately kept apart:
+- **Questions are data.** New questions or topics can be added in `questions.js` without touching any logic.
+- **Thresholds are configuration.** Every number behind "ready" lives in `config.js`, so the rules can be tuned as real exam outcomes come in.
+- **Scoring is separate from display.** `scoring.js` holds all the calculations, and the screens only show the result.
 
-## Put it online (Vercel)
+## Run locally
 
-1. Upload this folder to a new GitHub repository.
-2. Go to vercel.com → sign in with GitHub → **Add New Project** → choose the repository → **Deploy**.
-3. Vercel gives you a public link. Every time you push a change to GitHub, the live app updates automatically.
+```bash
+npm install
+npm run dev
+```
+
+Then open http://localhost:5173
+
+## Tech
+
+React, Vite and Tailwind CSS, deployed on Vercel. No login and no database in this first version.
 
 ---
 
-*Practice questions in the style of A1 exams. These are not official Goethe or ÖSD items.*
+*Practice questions in the style of A1 exams. These are not official Goethe or ÖSD items. The result is an estimate, not a guaranteed pass.*
